@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
 import '../main.dart';
 import '../services/prayer_service.dart';
@@ -352,7 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       label: const Text('আবার চেষ্টা করুন'),
                     ),
                     TextButton(
-                      onPressed: GeolocatorSettings.openLocationSettings,
+                      onPressed: Geolocator.openLocationSettings,
                       child: const Text('Location Settings'),
                     ),
                   ],
@@ -501,11 +502,5 @@ class _FeatureCard extends StatelessWidget {
         ],
       ),
     );
-  }
-}
-
-class GeolocatorSettings {
-  static Future<void> openLocationSettings() async {
-    await openLocationSettingsPage();
   }
 }
