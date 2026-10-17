@@ -215,7 +215,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onTap: () async {
                           await _loadSettings();
                           if (!mounted) return;
-                          ScaffoldMessenger.of(context).showSnackBar(
+                        
+                          ScaffoldMessenger.of(this.context).showSnackBar(
                             SnackBar(
                               content: Text(
                                 _isBangla
