@@ -138,9 +138,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Bangladesh local time = UTC + 6 hours.
   // adhan_dart prayer-time results are converted from UTC here.
-  DateTime _toBangladeshTime(DateTime time) {
-    return time.add(const Duration(hours: 6));
-  }
+ DateTime _toBangladeshTime(DateTime time) {
+  final utcTime = time.toUtc();
+
+  return DateTime(
+    utcTime.year,
+    utcTime.month,
+    utcTime.day,
+    utcTime.hour + 6,
+    utcTime.minute,
+    utcTime.second,
+  );
+}
 
   PrayerTimes _calculateFor(DateTime date) {
     final coordinates = Coordinates(
