@@ -1,6 +1,10 @@
 
 import 'package:flutter/material.dart';
+
 import 'screens/home_screen.dart';
+import 'screens/goals_screen.dart';
+import 'screens/bookmarks_screen.dart';
+import 'screens/settings_screen.dart';
 
 const Color appGreen = Color(0xFF155B4A);
 const Color appCream = Color(0xFFFFFCF5);
@@ -11,31 +15,76 @@ void main() {
   runApp(const IslamicCompanionApp());
 }
 
-class IslamicCompanionApp extends StatelessWidget {
+class IslamicCompanionApp extends StatefulWidget {
   const IslamicCompanionApp({super.key});
+
+  @override
+  State<IslamicCompanionApp> createState() =>
+      _IslamicCompanionAppState();
+}
+
+class _IslamicCompanionAppState extends State<IslamicCompanionApp> {
+  bool isDarkMode = false;
+  String language = 'bn';
+
+  void changeTheme(bool value) {
+    setState(() => isDarkMode = value);
+  }
+
+  void changeLanguage(String value) {
+    setState(() => language = value);
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Islamic Companion',
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: appCream,
-        colorScheme: ColorScheme.fromSeed(seedColor: appGreen),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: appGreen,
+          brightness: Brightness.light,
+        ),
         appBarTheme: const AppBarTheme(
           backgroundColor: appCream,
           foregroundColor: appGreen,
           centerTitle: false,
         ),
       ),
-      home: const MainNavigation(),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        brightness: Brightness.dark,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: appGreen,
+          brightness: Brightness.dark,
+        ),
+      ),
+      home: MainNavigation(
+        isDarkMode: isDarkMode,
+        onThemeChanged: changeTheme,
+        language: language,
+        onLanguageChanged: changeLanguage,
+      ),
     );
   }
 }
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final bool isDarkMode;
+  final ValueChanged<bool> onThemeChanged;
+  final String language;
+  final ValueChanged<String> onLanguageChanged;
+
+  const MainNavigation({
+    super.key,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+    required this.language,
+    required this.onLanguageChanged,
+  });
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
@@ -44,27 +93,22 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int selectedIndex = 0;
 
-  final List<Widget> pages = const [
-    HomeScreen(),
-    CompanionPlaceholder(
-      title: 'লক্ষ্যগুলো',
-      icon: Icons.check_circle_outline,
-      description: 'দৈনিক ইবাদতের লক্ষ্য ও অগ্রগতি এখানে যোগ করা হবে।',
-    ),
-    CompanionPlaceholder(
-      title: 'বুকমার্ক',
-      icon: Icons.bookmark_border,
-      description: 'সংরক্ষিত আয়াত ও দোয়া এখানে পাওয়া যাবে।',
-    ),
-    CompanionPlaceholder(
-      title: 'সেটিংস',
-      icon: Icons.settings_outlined,
-      description: 'ভাষা, থিম ও নামাজের হিসাব এখানে নিয়ন্ত্রণ করা যাবে।',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final isBangla = widget.language == 'bn';
+
+    final pages = [
+      const HomeScreen(),
+      const GoalsScreen(),
+      const BookmarksScreen(),
+      SettingsScreen(
+        isDarkMode: widget.isDarkMode,
+        onThemeChanged: widget.onThemeChanged,
+        language: widget.language,
+        onLanguageChanged: widget.onLanguageChanged,
+      ),
+    ];
+
     return Scaffold(
       body: IndexedStack(
         index: selectedIndex,
@@ -72,74 +116,33 @@ class _MainNavigationState extends State<MainNavigation> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: selectedIndex,
-        backgroundColor: Colors.white,
-        indicatorColor: const Color(0xFFE4F0EA),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        indicatorColor: Theme.of(context).colorScheme.primaryContainer,
         onDestinationSelected: (index) {
           setState(() => selectedIndex = index);
         },
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home),
-            label: 'হোম',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home),
+            label: isBangla ? 'হোম' : 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.check_circle_outline),
-            selectedIcon: Icon(Icons.check_circle),
-            label: 'লক্ষ্য',
+            icon: const Icon(Icons.check_circle_outline),
+            selectedIcon: const Icon(Icons.check_circle),
+            label: isBangla ? 'লক্ষ্য' : 'Goals',
           ),
           NavigationDestination(
-            icon: Icon(Icons.bookmark_border),
-            selectedIcon: Icon(Icons.bookmark),
-            label: 'বুকমার্ক',
+            icon: const Icon(Icons.bookmark_border),
+            selectedIcon: const Icon(Icons.bookmark),
+            label: isBangla ? 'বুকমার্ক' : 'Bookmarks',
           ),
           NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'সেটিংস',
+            icon: const Icon(Icons.settings_outlined),
+            selectedIcon: const Icon(Icons.settings),
+            label: isBangla ? 'সেটিংস' : 'Settings',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class CompanionPlaceholder extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final String description;
-
-  const CompanionPlaceholder({
-    super.key,
-    required this.title,
-    required this.icon,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 72, color: appGreen),
-              const SizedBox(height: 20),
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.bold,
-                  color: appGreen,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(description, textAlign: TextAlign.center),
-            ],
-          ),
-        ),
       ),
     );
   }
