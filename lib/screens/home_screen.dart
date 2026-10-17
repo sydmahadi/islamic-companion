@@ -7,6 +7,10 @@ import 'package:geolocator/geolocator.dart';
 import '../main.dart';
 import '../services/prayer_service.dart';
 
+import 'quran_screen.dart';
+import 'dua_screen.dart';
+import 'qibla_screen.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -411,6 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 12),
 
+            
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
@@ -418,36 +423,63 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               childAspectRatio: 1.55,
-              children: const [
+              children: [
                 _FeatureCard(
                   title: 'পবিত্র কোরআন',
                   subtitle: 'আয়াত ও অনুবাদ',
                   icon: Icons.menu_book,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const QuranScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _FeatureCard(
                   title: 'দোয়া ও যিকির',
                   subtitle: 'দৈনন্দিন আমল',
                   icon: Icons.favorite_outline,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const DuaScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _FeatureCard(
                   title: 'কিবলা',
                   subtitle: 'কাবার দিক',
                   icon: Icons.explore_outlined,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const QiblaScreen(),
+                      ),
+                    );
+                  },
                 ),
                 _FeatureCard(
                   title: 'মসজিদ',
                   subtitle: 'কাছের মসজিদ',
                   icon: Icons.mosque,
+                  onTap: () => _showComingSoon(context, 'মসজিদ'),
                 ),
                 _FeatureCard(
                   title: 'ইসলামিক ক্যালেন্ডার',
                   subtitle: 'হিজরি তারিখ',
                   icon: Icons.calendar_month,
+                  onTap: () => _showComingSoon(context, 'ইসলামিক ক্যালেন্ডার'),
                 ),
                 _FeatureCard(
                   title: 'আল্লাহর নাম',
                   subtitle: 'আসমাউল হুসনা',
                   icon: Icons.auto_awesome,
+                  onTap: () => _showComingSoon(context, 'আল্লাহর নাম'),
                 ),
               ],
             ),
@@ -458,48 +490,68 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
+
+void _showComingSoon(BuildContext context, String feature) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('$feature ফিচারটি শিগগিরই যুক্ত করা হবে।'),
+    ),
+  );
+}
+
 class _FeatureCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final IconData icon;
+  final VoidCallback? onTap;
 
   const _FeatureCard({
     required this.title,
     required this.subtitle,
     required this.icon,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF4DF),
+    return Material(
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      borderRadius: BorderRadius.circular(20),
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFF0E3C7)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: appGreen, size: 30),
-          const SizedBox(height: 10),
-          Text(
-            title,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: Theme.of(context).colorScheme.outlineVariant,
             ),
           ),
-          const SizedBox(height: 3),
-          Text(
-            subtitle,
-            style: const TextStyle(
-              color: Colors.black54,
-              fontSize: 11,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: appGreen, size: 30),
+              const SizedBox(height: 10),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  fontSize: 11,
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
