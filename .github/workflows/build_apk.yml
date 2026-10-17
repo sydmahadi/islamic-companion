@@ -1,3 +1,4 @@
+
 name: Build Android APK
 
 on:
@@ -19,16 +20,26 @@ jobs:
         with:
           channel: stable
 
-      - name: Create Flutter project
+      - name: Create Android project
         run: |
           flutter create . \
             --org com.sayeed \
             --project-name islamic_companion
 
+      - name: Verify Android Manifest
+        run: |
+          test -f android/app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.INTERNET' android/app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.ACCESS_FINE_LOCATION' android/app/src/main/AndroidManifest.xml
+          grep -q 'android.permission.ACCESS_COARSE_LOCATION' android/app/src/main/AndroidManifest.xml
+
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build APK
+      - name: Analyze Flutter code
+        run: flutter analyze
+
+      - name: Build Release APK
         run: flutter build apk --release
 
       - name: Upload APK
@@ -36,3 +47,4 @@ jobs:
         with:
           name: islamic-companion-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
